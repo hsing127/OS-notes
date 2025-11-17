@@ -86,6 +86,8 @@ Top 4 levels are semi conductor memory consisting of semi condutcor based electr
 
 ## IO Structure
 
+![](../assets/2025-11-17-13-19-30.png)
+
 For bulk data movement such as NVS I/O :- 
 1. Direct memory access DMA is used
 2. Controller sets up the pointers, buffers, counters and transfers an entire block of data direclty to or from device and main memory wihtout any intervention from the CPU via the interrrupt mechanism
@@ -159,3 +161,71 @@ System Daemons - services provided outside of the kernel like "systemd" in linun
 Trap - software generated interrupt caused either by an error or by a specific request from a user program that an OS service be performed by executing a special operation called a **system call**.
 
 ## Multiprogramming and Multitasking
+
+Multiprogramming increases CPU utilisation by organizing programs so that CPU always has pne to execute - here a program execution is termed a process.
+
+Multitasking - logical extesnion of multi programming - executes multiple CPU processes simultaneously by switching among them but the switches occur frequentlt providing the user a fast response time - this is **CPU Scheduling**
+
+**Virtual Memory** - techinique that allows execution of a process that is not completely in memory - allowing users to run programs that are larger than physical memory - it abstracts main memory into large uniform array of storage separating logical memory as viewed by the user from physical memory.
+
+## Dual Mode and Multimode Operation
+
+1. User mode
+2. Kernel mode (supervisor mode, system mode, privileged mode) - done via **mode** bit added to hardware of the computer to indicate current mode
+
+Boot time - hardware starts in kernel mode --> OS is loaded and starts user applications in user mode --> if trap or interrrupt occurs the harware switches from user to kernel mode --> switches back to user mode before passing control to the user program
+
+System call - means for user program to ask the OS to perform privileged tasks - usually takes the form of a trap or a specific syscall instruction.
+
+When a syscall is executed:
+1. treated by hardware as an interrupt
+2. Control passes through the interrrupt vector to a service routine in the OS.
+3. Mode bit is set to kernel mode
+4. Kernel identifies the interrupting instruction to see which syscall has occured - a parameter indicates what type of service the user program is requesting
+5. Kernel verifies parameters are correct and legal 
+6. Executes the request
+7. Passes control back to the instruction follow the syscall
+
+## Timer
+
+Purpose: The OS must maintain control over the CPU - cannot allow a program to get stuck in an infinite loop and never return control.
+Way: Timer can be set to interrrupt after specified period
+**Variable Timer** - Implemented by a fixed rate clock and a counter - everytime clock ticks counter is decreased - when it reaches 0 - interrupt occurs
+
+# Resource Management
+
+## Process Management
+
+A process needs certain resources—including CPUtime, memory, files, and I/O devices—to accomplish its task
+
+IMP: A program by itself is not a process. A program is a passive entiity like contents of a file stored on the disk whereas a process is an active entity. A single threaded process has one program counter - specifying next instructions to execute. The execution of such process must be sequential - instructions one after the other till the process completes. A multithreaaded process has multiple porgram counters each pointing to the next instrucion to execute.
+
+A process is a unit of work in a system. System consists of colloection of processes swome of which are OS processes and rest are OS processes.
+
+OS is responsible for the following activities in connnection with process management :- 
+1. Creating and deleting both user and system processes
+2. Scheduling processes and threads on the CPUs
+3. Suspending and resuming processes
+4. Providing mechanisms for process synchronization
+5. Providing mechanizsms for process communication
+
+## Memory Management
+
+Main memory (RAM) is a repository of quickly accessible data shared by the CPU and the IO Devices. CPU reads instrcutions from main memory and writes to main memory too - it is the only large storage device that is accessible to CPU directly
+
+For a program to be executed it must be mapped to absolute address and loaded into memory. As the program executes program instructions are read from the memory by generating these absolute addresses. Eventually, the program terminates its memory space is declared available and the next program can be loaded and executed
+
+OS is responsible for the following activities in connection with memory management:- 
+1. Keeping track of which parts of memory are currently being used and whihc process is using them
+2. Allocating and Deallocating memory space as needed
+3. Deciding which processes (or parts of processes) and data move into and out of the memory.
+
+## Cache Management
+
+Data copied from memory to faster storage system - Cache - managed by the hardware.
+
+![](../assets/2025-11-17-14-43-00.png)
+
+Some caches are implemented totally in hardware - most systems have instruction cache to hold whihc instrcutions to be executed next - they are out of control of the OS
+
+Cache Coherency - data stored in multiple places like disk, memory, cache and registers can go out of sync when updated or read
