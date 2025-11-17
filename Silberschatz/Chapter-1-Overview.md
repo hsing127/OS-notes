@@ -80,7 +80,7 @@ Tradeoff between size and speed - smaller and faster memory closer to the CPU
 
 Top 4 levels are semi conductor memory consisting of semi condutcor based electronic circuits.
 
-IMPORTANT CLARIFICATIONS FOR ALL CHAPTERS GOING FORWARD:- 
+**IMPORTANT CLARIFICATIONS FOR ALL CHAPTERS GOING FORWARD:-** 
 1. memory stands for volatile memory - like RAM, register, etc
 2. NVS - HDDs, SSD, etc
 
@@ -93,4 +93,69 @@ For bulk data movement such as NVS I/O :-
 
 # Computer System Architecture
 
+## Single-Processor Systems
 
+Before most computer systems used a single processor with one CPU with a single core.
+Core - CPU componetnt that executes instructions and registers for storing data locally. 
+The one main CPU is reponsible for executing the general purpose instrucition set including the instrcutions from processes.
+These systems are capable of executing a general purpose instruction set, and can have device specific processors such as disk keyboard, and graphics controller
+
+Basically the existence of these specific microprocessors that may or may not take instructions from the OS does not make these systems multicore as they have only 1 general purspose core.
+
+## Multicore systems
+
+Traditionally, two or more processors each with single core CPU - they share the computer bus, clock, memory and peripeheral devices.
+- Increased throughput - expect more work done in less time but overhead occurs when keeping all parts working correctly plus contention for share resources
+
+Most commonn multicore systems use Symmetric Multiprocessing (SMP) - each peer CPU processor performs all tasks including OS functions and user processes. 
+
+![](../assets/2025-11-17-11-58-08.png)
+
+Each CPU processor has its own set of registers, cache. All processors share physical memory over the system bus.
+- can run N processes
+- but is possible that one processor gets overloaded.
+
+Now multicore means multiple core residing on a single chip - they are more efficient as on-chip communication is faster than between chip communication.
+They also use singnificantly less power than the counterparts.
+
+![](../assets/2025-11-17-12-06-41.png)
+
+Each core has its own local cache - L1
+L2 is local to the chip but shared by the 2 cores
+
+![](../assets/2025-11-17-12-09-07.png)
+
+![](../assets/2025-11-17-12-14-57.png)
+
+Adding more CPUs we run into the system bus bottleneck.
+Alternative approach - provice each CPU or group of CPUS with its own local memory that is accessed via a small, fast bus. The CPUs are connected by a **shared system interconnect**, so that all CPUs share the same address space. This is NUMA (Non-uniform memory access). Advantage is when CPU accesses local memory it is fast and no contention over the system interconnect.
+**NUMA systems scale more effectively as more processors are added**
+
+Drawback - increased latency for remote memory access like CPU0 try to access CPU3 memeory. This can be minimied by careful CPU scheduling and memory management.
+
+**Blade servers** - multiple processors boards, I/O boards and networking boards placed in the same chassis - difference vs multicore is each board boots up with its own OS.
+
+## Clustered Systems
+
+Loosely coupled - composed of 2 individual systems - mostly connected via LAN or faster interconnect like InfiniBand
+
+This section is all about 
+1. Fault Tolerance, 
+2. Graceful Degradation, 
+3. Asymmetric Clustering (using a hot standby monitoring main), 
+4. Symmetric Clustering( 2nodes monitoring each other), 
+5. Redundancy, 
+6. Parallelization (dividing the program into separate components that run in parallel on individual cores in a computer or a cluster of computers)
+7. Storage Area Networks - support thousands of systems in a cluster over a wide area
+8. Distributed Lock manager (DLM) - provide shared access control to a database and locking to ensure no conflicting operations occur.
+
+# Operating System Operations
+
+ Bootstrap program initializes all aspects of system from CPU registers to device controllers to memory contents, locates the kernel and loads it into memory.
+
+After kernel is loaded, starts providing services to system and users
+System Daemons - services provided outside of the kernel like "systemd" in linunx that starts many other daemons.
+
+Trap - software generated interrupt caused either by an error or by a specific request from a user program that an OS service be performed by executing a special operation called a **system call**.
+
+## Multiprogramming and Multitasking
