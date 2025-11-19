@@ -58,4 +58,85 @@ CPU-bound processes - generates I/O requests infrequently using more of its time
 
 ## Scheduling queues
 
+Ready Queue - stored as a linked list; ready-queue header contains pointer to the first PCB in the list, each PCB includes a pointer field that points to the next PCB in the list.
 
+CPU Scheduler - executes atleast every 100 milliseconds as it has to keep removing the process from the CPU.
+Swapping - removing a process from contention for CPU by moving it to the disk - necessary when memory is overcommitted
+
+![](assets/2025-11-18-18-35-56.png)
+
+## Context Switch
+
+When interrupt occurs the system needs to save the current context of the process running on the CPU core so that it can restore that context when it resumes - represented in the PCB of the process.
+Pure overhead as the system does not do anything in this duration
+
+![](assets/2025-11-18-18-39-40.png)
+
+# Interprocess Communication
+- Information Sharing - several apps interested in same piece of info
+- Computation Speedup - breaking a task into subtasks, each running in parallel - can only be done on a multicore cpu
+- Modularity - dividing system functions into separate processes or threads
+
+![](../assets/2025-11-19-13-49-57.png)
+
+2 models:- 
+1. Shared memory - region of memory shared by processes, exchange info my reading and writing data to the shared memory
+   - faster than message passing since done using syscalls
+   - syscalls only required to establish shared memory regions, all other are routine memory accesses not syscalls
+2. Message Passing - done via means of messages 
+    - useful for exchanging small amount of data
+    - easier to implement
+
+## IPC in Shared Memoery Systems
+
+The shared-memory region resides inside the process's address space - other process attach this to them - both must agree to do this - they are responsible for ensuring they are not writing to the same location simultaneously.
+
+2 types of buffers can be used for writing
+- unbounded - consumer might have to wait but the producer can always produce new items
+- bounded - consumer must wait if buffer is empty and producer must wait if buffer is full
+
+## IPC In Message-Passing Systems
+
+synchronize without sharing address space - distributed environments
+communication link - send and recieve messages over a channel
+
+### Naming
+Direct communication - send messages using the names of the processes
+Indirect communication - send messages using using mailboxes or ports
+
+### Synchronization
+Message passing can be blocking (sychronous) or non-blocking(asynchronous)
+
+Blocking send - sending process is blocked until a message is recieved by the receving process or the mailbox
+Nonblocking send - sends message and resumes operation
+Blocking receive - Receiver blocks until a message is available
+Nonblocking receive - Receiver receives either a valid value or null
+
+Buffering
+
+Queues types
+1. Zero cpacity - link cannot have any messages waiting, sender must block until the receiver recives
+2. Bounded capacity - finite length n; at most n messages can reside, sender must block
+3. Unbounded capacity - queue length is potentially infinite, sender never blocks
+
+# Communication in Client Server Systems
+
+## Sockets
+
+Endpoint for communication - each process communicating over a network gets its own socket - IP address followed by a port
+Steps:
+1. Server waits for incoming requests on a port
+2. Server accepts the connection from the client to complete connection
+3. Client that initiates a connection request is assigned a port - greater than 1024
+4. Java Sockets: Connection-oriented(TCP) - Sockets class, Connectionless(UDP) - DatagramSocket class and MulticastSocket class - subclass of DatagramSocket; allows data to be sent to multiple recepients
+5. The server sends the data over the socket
+6. Clients dont have to accept connections - they can just send the data to teh server port but servers have to accept connections first
+
+## Remote Procedure Calls
+
+Designed to abstract the procedure-call mechanism for use between systems and network connections
+use a message based communication to enables remote service
+
+In contrast with IPC messages, RPC messages are well structured and no longer just packets of data - each message addressed to a RPC daemon listening to a port on the remote system containing an identifier function to execute and params to pass to that function. The function is then executed as requested and any output is sent back to the requester in a separate message.
+
+Ports in this provide a way for clients to execute set functions on different prots by sending requests to corresponding ports.
